@@ -81,6 +81,7 @@ export default {
   setup () {
     const store = useStore()
     const data = reactive({
+      first: 0,
       songShow: ref(false),
       audio: ref(0),
       currentTime: 0,
@@ -120,10 +121,12 @@ export default {
     watch(
       () => data.song,
       (count, prevCount) => {
-        if (data.audio.src !== undefined) {
+        if (data.first !== 0) {
           nextTick(() => {
             playStart()
           })
+        } else {
+          data.first = 0
         }
       },
       {
@@ -190,7 +193,7 @@ export default {
 
 <style lang="less" scoped>
 .bottom-player {
-  border-top: .02rem solid rgba(0, 0, 0, 0.15);
+  border-top: 0.02rem solid rgba(0, 0, 0, 0.15);
   height: 1.2rem;
   width: 100%;
   background-color: white;
@@ -213,11 +216,11 @@ export default {
     border-radius: 50%;
     position: relative;
     top: -0.1rem;
-    left: .2rem;
+    left: 0.2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: .5rem;
+    margin-right: 0.5rem;
     animation: xuan 10s linear infinite;
     animation-play-state: paused;
     @keyframes xuan {
@@ -229,15 +232,15 @@ export default {
       }
     }
     img {
-      width: .7rem;
-      height: .7rem;
+      width: 0.7rem;
+      height: 0.7rem;
       background-color: red;
       border-radius: 50%;
     }
   }
   .song-name {
     width: 3.2rem;
-    margin-right: .8rem;
+    margin-right: 0.8rem;
     white-space: nowrap;
     line-height: 1.2rem;
     overflow: hidden;
@@ -249,21 +252,21 @@ export default {
     color: white;
   }
   /deep/.van-icon:before {
-    font-size: .6rem;
+    font-size: 0.6rem;
   }
 
   .play {
-    margin-right: .4rem;
+    margin-right: 0.4rem;
     .van-circle {
-      width: .7rem;
-      height: .7rem;
+      width: 0.7rem;
+      height: 0.7rem;
       position: relative;
       .icon {
         position: absolute;
         top: 20%;
         left: 24%;
-        width: .4rem;
-        height: .4rem;
+        width: 0.4rem;
+        height: 0.4rem;
       }
     }
   }
