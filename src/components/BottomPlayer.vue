@@ -1,0 +1,271 @@
+<template>
+  <div class="bottom-player"
+       v-if="song">
+    <van-swipe loop
+               :initial-swipe="store.state.songIndex"
+               @change="onChange"
+               @click="onClick"
+               :show-indicators="false"
+               lazy-render>
+      <van-swipe-item v-for="songs,index in newSongList"
+                      :key="index">
+        <div class="song-img"
+             :style="playStatus?'animation-play-state:running':'animation-play-state:paused'">
+          <img :src="songs.al.picUrl">
+        </div>
+        <div class="song-name">
+          {{songs.name}} -
+          <span class="singer">{{singer(songs.ar)}}</span> -
+          {{songs.al.name}}
+        </div>
+      </van-swipe-item>
+    </van-swipe>
+    <van-popup v-model:show="songShow"
+               :close-on-popstate="true"
+               closeable
+               close-icon="arrow-down"
+               close-icon-position="top-left"
+               position="bottom"
+               :style="{ height: '100%' }">
+      <song-details :song="song"
+                    @alterCurrentTime="alterCurrentTime"
+                    @playMusic="playMusic"
+                    :currentTime="currentTime" />
+    </van-popup>
+    <div class="play"
+         @click="playMusic()">
+      <van-circle v-model:current-rate="currentRate"
+                  :rate="rate"
+                  color="black"
+                  layer-color="#BEBEBE"
+                  :speed="100">
+        <svg class="icon"
+             aria-hidden="true">
+          <use :xlink:href="playStatus?'#icon-gf-pause2':'#icon-bofang2'"></use>
+        </svg>
+      </van-circle>
+    </div>
+    <div class="list"
+         @click="playList">
+      <svg class="icon"
+           aria-hidden="true">
+        <use xlink:href="#icon-bofangliebiao-copy-copy"></use>
+      </svg>
+    </div>
+    <audio ref="audio"
+           :loop="playTheWayIndex===1?true:false"
+           :src="`https://music.163.com/song/media/outer/url?id=${song.id}.mp3`">
+    </audio>
+    <van-popup v-model:show="show"
+               round
+               :close-on-popstate="true"
+               position="bottom"
+               :style="{ height: '70%' }">
+      <play-list />
+    </van-popup>
+  </div>
+</template>
+
+<script>
+import PlayList from '@/components/PlayList'
+import SongDetails from '@/components/SongDetails'
+import { reactive, toRefs, ref } from '@vue/reactivity'
+import { useStore } from 'vuex'
+import { nextTick } from 'vue'
+import { computed, watch } from '@vue/runtime-core'
+export default {
+  components: {
+    PlayList,
+    SongDetails
+  },
+  setup () {
+    const store = useStore()
+    const data = reactive({
+      songShow: ref(false),
+      audio: ref(0),
+      currentTime: 0,
+      currentRate: ref(0),
+      song: computed(() => store.state.songList[store.state.songIndex]),
+      songList: computed(() => store.state.songList),
+      newSongList: computed(() => store.state.newSongList),
+      playStatus: computed(() => store.state.playStatus),
+      playTheWayIndex: computed(() => store.state.playTheWayIndex),
+      rate: 0,
+      show: ref(false),
+      alterRate: null
+    })
+    // 轮播图变化触发的事件
+    const onClick = () => {
+      data.songShow = true
+    }
+    const onChange = (index) => {
+      store.commit('ALTERSONGINDEX', index)
+    }
+    // 播放列表展开
+    const playList = () => {
+      data.show = true
+    }
+    // 开始播放
+    const playStart = () => {
+      data.audio.play()
+      store.commit('ALTERPLAYSTATUS', 1)
+      rateStatus()
+    }
+    // 暂停播放
+    const playStop = () => {
+      data.audio.pause()
+      store.commit('ALTERPLAYSTATUS', 0)
+    }
+    // 监听歌曲变化
+    watch(
+      () => data.song,
+      (count, prevCount) => {
+        if (data.audio.src !== undefined) {
+          nextTick(() => {
+            playStart()
+          })
+        }
+      },
+      {
+        deep: true
+      }
+    )
+    // 歌手名称
+    const singer = (singers) => {
+      let name = ''
+      singers.forEach(element => {
+        name += element.name + '/'
+      })
+      return name.slice(0, -1)
+    }
+    // 进度条
+    function rateStatus () {
+      data.alterRate = requestAnimationFrame(function rate () {
+        if (data.audio.paused) {
+          store.commit('ALTERPLAYSTATUS', 0)
+          cancelAnimationFrame(data.alterRate)
+          if (data.rate === '100') {
+            if (store.state.songIndex === store.state.songList.length - 1) {
+              store.commit('ALTERSONGINDEX', 0)
+            } else {
+              store.commit('ALTERSONGINDEX', store.state.songIndex + 1)
+            }
+          }
+        } else {
+          if (!isNaN(data.audio.duration)) {
+            data.currentTime = data.audio.currentTime
+            data.rate = (data.audio.currentTime / data.audio.duration * 100).toFixed(0)
+          }
+          data.alterRate = requestAnimationFrame(rate)
+        }
+      })
+    }
+    // 播放和暂停设置
+    const playMusic = () => {
+      if (data.playStatus) {
+        playStop()
+      } else {
+        playStart()
+      }
+    }
+    // console.log(data.song)
+    const alterCurrentTime = (value) => {
+      data.audio.currentTime = value
+      data.currentTime = value
+    }
+    return {
+      alterCurrentTime,
+      onClick,
+      store,
+      onChange,
+      ...toRefs(data),
+      singer,
+      playMusic,
+      playList
+      // rate
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.bottom-player {
+  border-top: .02rem solid rgba(0, 0, 0, 0.15);
+  height: 1.2rem;
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  .van-swipe {
+    width: 5.2rem;
+  }
+  .van-swipe-item {
+    width: 5.2rem;
+    display: flex;
+    align-items: center;
+  }
+  .song-img {
+    width: 1rem;
+    height: 1rem;
+    background-color: black;
+    border-radius: 50%;
+    position: relative;
+    top: -0.1rem;
+    left: .2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: .5rem;
+    animation: xuan 10s linear infinite;
+    animation-play-state: paused;
+    @keyframes xuan {
+      0% {
+        transform: rotate(0);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    img {
+      width: .7rem;
+      height: .7rem;
+      background-color: red;
+      border-radius: 50%;
+    }
+  }
+  .song-name {
+    width: 3.2rem;
+    margin-right: .8rem;
+    white-space: nowrap;
+    line-height: 1.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /deep/.van-icon-arrow-down:before {
+    position: relative;
+    z-index: 100;
+    color: white;
+  }
+  /deep/.van-icon:before {
+    font-size: .6rem;
+  }
+
+  .play {
+    margin-right: .4rem;
+    .van-circle {
+      width: .7rem;
+      height: .7rem;
+      position: relative;
+      .icon {
+        position: absolute;
+        top: 20%;
+        left: 24%;
+        width: .4rem;
+        height: .4rem;
+      }
+    }
+  }
+}
+</style>

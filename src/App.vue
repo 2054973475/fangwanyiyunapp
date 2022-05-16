@@ -1,30 +1,52 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+    <router-view />
+  <bottom-player />
 </template>
 
-<style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import { watch, onMounted } from '@vue/runtime-core'
+import BottomPlayer from './components/BottomPlayer.vue'
+import { useStore } from 'vuex'
+export default {
+  components: {
+    BottomPlayer
+  },
+  setup () {
+    const store = useStore()
+    onMounted(() => {
+      store.commit('ALTERSONGLISTS', JSON.parse(localStorage.getItem('songList')))
+      store.commit('ALTERNEWSONGLIST', JSON.parse(localStorage.getItem('newSongList')))
+      store.commit('ALTERSONGINDEX', Number(localStorage.getItem('songIndex')))
+      store.commit('ALTERPLAYTHEWAYINDEX', Number(localStorage.getItem('playTheWayIndex')))
+    })
+    watch(
+      [() => store.state.songIndex, () => store.state.newSongList, () => store.state.playTheWayIndex],
+      (count, prevCount) => {
+        localStorage.setItem('songList', JSON.stringify(store.state.songList))
+        localStorage.setItem('newSongList', JSON.stringify(store.state.newSongList))
+        localStorage.setItem('songIndex', store.state.songIndex)
+        localStorage.setItem('playTheWayIndex', store.state.playTheWayIndex)
+      },
+      {
+        deep: true
+      }
+    )
+  }
 }
+</script>
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+<style lang="less">
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  .icon {
+    width: 0.6rem;
+    height: 0.6rem;
+    fill: currentColor;
+    overflow: hidden;
   }
 }
 </style>
