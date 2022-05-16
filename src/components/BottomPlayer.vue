@@ -83,20 +83,19 @@ export default {
     const data = reactive({
       first: 0,
       songShow: ref(false),
-      audio: ref(0),
+      audio: ref(null),
       currentTime: 0,
       currentRate: ref(0),
-      song: computed(() => {
-        console.log(store.state.songList[store.state.songIndex])
-        return store.state.songList[store.state.songIndex]
-      }),
-      songList: computed(() => store.state.songList),
-      newSongList: computed(() => store.state.newSongList),
-      playStatus: computed(() => store.state.playStatus),
-      playTheWayIndex: computed(() => store.state.playTheWayIndex),
       rate: 0,
       show: ref(false),
       alterRate: null
+    })
+    const songList = computed(() => store.state.songList)
+    const newSongList = computed(() => store.state.newSongList)
+    const playStatus = computed(() => store.state.playStatus)
+    const playTheWayIndex = computed(() => store.state.playTheWayIndex)
+    const song = computed(() => {
+      return store.state.songList[store.state.songIndex]
     })
     // 轮播图变化触发的事件
     const onClick = () => {
@@ -122,14 +121,14 @@ export default {
     }
     // 监听歌曲变化
     watch(
-      () => data.song,
+      () => song,
       (count, prevCount) => {
         if (data.first !== 0) {
           nextTick(() => {
             playStart()
           })
         } else {
-          data.first = 0
+          data.first = 1
         }
       },
       {
@@ -168,7 +167,7 @@ export default {
     }
     // 播放和暂停设置
     const playMusic = () => {
-      if (data.playStatus) {
+      if (playStatus.value) {
         playStop()
       } else {
         playStart()
@@ -187,7 +186,12 @@ export default {
       ...toRefs(data),
       singer,
       playMusic,
-      playList
+      playList,
+      song,
+      songList,
+      newSongList,
+      playStatus,
+      playTheWayIndex
       // rate
     }
   }
