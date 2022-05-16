@@ -94,9 +94,8 @@ export default {
     const newSongList = computed(() => store.state.newSongList)
     const playStatus = computed(() => store.state.playStatus)
     const playTheWayIndex = computed(() => store.state.playTheWayIndex)
-    const song = computed(() => {
-      return store.state.songList[store.state.songIndex]
-    })
+    const song = computed(() => newSongList.value[store.state.songIndex]
+    )
     // 轮播图变化触发的事件
     const onClick = () => {
       data.songShow = true
