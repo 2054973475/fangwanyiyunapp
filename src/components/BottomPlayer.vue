@@ -86,7 +86,10 @@ export default {
       audio: ref(0),
       currentTime: 0,
       currentRate: ref(0),
-      song: computed(() => store.state.songList[store.state.songIndex]),
+      song: computed(() => {
+        console.log(store.state.songList[store.state.songIndex])
+        return store.state.songList[store.state.songIndex]
+      }),
       songList: computed(() => store.state.songList),
       newSongList: computed(() => store.state.newSongList),
       playStatus: computed(() => store.state.playStatus),
