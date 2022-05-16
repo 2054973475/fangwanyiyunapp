@@ -4,7 +4,7 @@
     <discover-swpier :images="images" />
     <icon-list />
     <recommend-the-play-list :playList="playList" />
-    <loading-overlay :show="playList.length===0" />
+    <loading-overlay :show="false" />
   </div>
 </template>
 
