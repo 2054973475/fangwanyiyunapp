@@ -69,10 +69,9 @@
 <script>
 import PlayList from '@/components/PlayList'
 import SongDetails from '@/components/SongDetails'
-import { reactive, toRefs, ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
-import { nextTick } from 'vue'
-import { computed, watch } from '@vue/runtime-core'
+import { nextTick, reactive, toRefs, ref, computed, watch } from 'vue'
+
 export default {
   components: {
     PlayList,
