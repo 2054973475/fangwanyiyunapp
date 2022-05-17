@@ -70,7 +70,7 @@
 import PlayList from '@/components/PlayList'
 import SongDetails from '@/components/SongDetails'
 import { useStore } from 'vuex'
-import { nextTick, reactive, toRefs, ref, watch } from 'vue'
+import { nextTick, reactive, toRefs, toRef, ref, watch } from 'vue'
 
 export default {
   components: {
@@ -91,8 +91,8 @@ export default {
     })
     const songList = store.state.songList
     const newSongList = store.state.newSongList
-    const playStatus = store.state.playStatus
-    const playTheWayIndex = store.state.playTheWayIndex
+    const playStatus = toRef(store.state, 'playStatus')
+    const playTheWayIndex = toRef(store.state, 'playTheWayIndex')
     const song = newSongList[store.state.songIndex]
     // 轮播图变化触发的事件
     const onClick = () => {
@@ -164,7 +164,7 @@ export default {
     }
     // 播放和暂停设置
     const playMusic = () => {
-      if (playStatus) {
+      if (playStatus.value) {
         playStop()
       } else {
         playStart()

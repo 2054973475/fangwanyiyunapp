@@ -1,5 +1,5 @@
 <template>
-    <router-view />
+  <router-view />
   <bottom-player />
 </template>
 
@@ -14,10 +14,12 @@ export default {
   setup () {
     const store = useStore()
     onMounted(() => {
-      store.commit('ALTERSONGLISTS', JSON.parse(localStorage.getItem('songList')))
-      store.commit('ALTERNEWSONGLIST', JSON.parse(localStorage.getItem('newSongList')))
-      store.commit('ALTERSONGINDEX', Number(localStorage.getItem('songIndex')))
-      store.commit('ALTERPLAYTHEWAYINDEX', Number(localStorage.getItem('playTheWayIndex')))
+      if (JSON.parse(localStorage.getItem('songList')) !== null) {
+        store.commit('ALTERSONGLISTS', JSON.parse(localStorage.getItem('songList')))
+        store.commit('ALTERNEWSONGLIST', JSON.parse(localStorage.getItem('newSongList')))
+        store.commit('ALTERSONGINDEX', Number(localStorage.getItem('songIndex')))
+        store.commit('ALTERPLAYTHEWAYINDEX', Number(localStorage.getItem('playTheWayIndex')))
+      }
     })
     watch(
       [() => store.state.songIndex, () => store.state.newSongList, () => store.state.playTheWayIndex],
