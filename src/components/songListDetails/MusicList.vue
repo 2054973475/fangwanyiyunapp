@@ -61,8 +61,8 @@
 </template>
 
 <script>
-import { reactive, toRefs } from '@vue/reactivity'
 import { useStore } from 'vuex'
+import { computed } from '@vue/runtime-core'
 export default {
   props: {
     musicList: {
@@ -71,10 +71,9 @@ export default {
   },
   setup (props) {
     const store = useStore()
-    const data = reactive({
-      songIndex: store.state.songIndex,
-      newSongList: store.state.newSongList
-    })
+    const songIndex = computed(() => store.state.songIndex)
+    const newSongList = computed(() => store.state.newSongList)
+
     const author = (authors) => {
       let author = ''
       authors.forEach(element => {
@@ -84,7 +83,7 @@ export default {
     }
     const alterSongList = (music) => {
       store.commit('ALTERSONGLIST', props.musicList)
-      const index = store.state.newSongList.findIndex((item) => {
+      const index = newSongList.value.findIndex((item) => {
         return item.id === music.id
       })
       store.commit('ALTERSONGINDEX', index)
@@ -93,7 +92,8 @@ export default {
     return {
       author,
       alterSongList,
-      ...toRefs(data)
+      songIndex,
+      newSongList
     }
   }
 }
@@ -105,7 +105,7 @@ export default {
   margin-top: 1.5rem;
 }
 header {
-  padding: .4rem 0;
+  padding: 0.4rem 0;
   position: sticky;
   top: -0.02rem;
   background-color: white;
@@ -118,7 +118,7 @@ header {
       height: 0.5rem;
     }
     .title {
-      margin: 0 .2rem;
+      margin: 0 0.2rem;
       font-size: 0.35rem;
       font-weight: bold;
     }
@@ -153,17 +153,17 @@ main {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: .4rem 0;
+      margin: 0.4rem 0;
       .index {
         text-align: center;
-        margin-left: .2rem;
-        margin-right: .4rem;
+        margin-left: 0.2rem;
+        margin-right: 0.4rem;
         font-size: 0.32rem;
         color: rgba(0, 0, 0, 0.7);
       }
       .icon {
-        width: .6rem;
-        height: .6rem;
+        width: 0.6rem;
+        height: 0.6rem;
       }
       .content {
         width: 72%;
@@ -180,7 +180,7 @@ main {
           overflow: hidden;
           text-overflow: ellipsis;
           font-size: 0.26rem;
-          line-height: .6rem;
+          line-height: 0.6rem;
           span {
             border: 0.02rem solid red;
             color: red;
@@ -195,13 +195,13 @@ main {
         justify-content: right;
         align-items: center;
         .play {
-          height: .6rem;
-          width: .6rem;
+          height: 0.6rem;
+          width: 0.6rem;
         }
         .more {
-          height: .6rem;
-          width: .6rem;
-          margin-left: .2rem;
+          height: 0.6rem;
+          width: 0.6rem;
+          margin-left: 0.2rem;
         }
       }
     }

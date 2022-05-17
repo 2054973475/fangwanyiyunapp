@@ -29,7 +29,7 @@
     </header>
     <main>
       <ul>
-        <li v-for="play,index in  playList"
+        <li v-for="play,index in  songList"
             :key="index"
             @click="playSong(play)">
           <span class="name"
@@ -59,6 +59,7 @@
 <script>
 import { reactive, toRefs } from '@vue/reactivity'
 import { useStore } from 'vuex'
+import { computed } from '@vue/runtime-core'
 export default {
   setup () {
     const store = useStore()
@@ -73,14 +74,17 @@ export default {
         {
           icon: 'icon-gl-shuffle', name: '随机播放'
         }
-      ],
-      newPlaySong: store.state.newSongList[store.state.songIndex],
-      playList: store.state.songList,
-      playNumber: store.state.songList.length,
-      playTheWayIndex: store.state.playTheWayIndex
+      ]
     })
+    const songIndex = computed(() => store.state.songIndex)
+    const newPlaySong = computed(() => store.state.newSongList[songIndex.value])
+    const songList = computed(() => store.state.songList)
+    const playNumber = computed(() => store.state.songList.length)
+    const playTheWayIndex = computed(() => store.state.playTheWayIndex)
+    const newSongList = computed(() => store.state.newSongList)
+
     const playSong = (song) => {
-      const index = store.state.newSongList.findIndex((item) => {
+      const index = newSongList.value.findIndex((item) => {
         return item.id === song.id
       })
       store.commit('ALTERSONGINDEX', index)
@@ -108,22 +112,22 @@ export default {
     }
     // 修改播放方式
     const alterPlayTheWay = () => {
-      if (data.playTheWayIndex === 2) {
+      if (playTheWayIndex.value === 2) {
         store.commit('ALTERPLAYTHEWAYINDEX', 0)
-        const newIndex = store.state.songList.findIndex((item) => {
-          return item.id === store.state.newSongList[store.state.songIndex].id
+        const newIndex = songList.value.findIndex((item) => {
+          return item.id === newSongList.value[songIndex.value].id
         })
         store.commit('ALTERSONGINDEX', newIndex)
-        store.commit('ALTERNEWSONGLIST', store.state.songList)
+        store.commit('ALTERNEWSONGLIST', songList.value)
       } else {
-        store.commit('ALTERPLAYTHEWAYINDEX', data.playTheWayIndex + 1)
-        if (data.playTheWayIndex === 2) {
-          let newSongList = [...store.state.songList]
-          newSongList = getArrRandomly(newSongList)
-          const newIndex = newSongList.findIndex((item) => {
-            return item.id === store.state.songList[store.state.songIndex].id
+        store.commit('ALTERPLAYTHEWAYINDEX', playTheWayIndex.value + 1)
+        if (playTheWayIndex.value === 2) {
+          let newSongLists = [...songList.value]
+          newSongLists = getArrRandomly(newSongLists)
+          const newIndex = newSongLists.findIndex((item) => {
+            return item.id === songList.value[songIndex.value].id
           })
-          store.commit('ALTERNEWSONGLIST', newSongList)
+          store.commit('ALTERNEWSONGLIST', newSongLists)
           store.commit('ALTERSONGINDEX', newIndex)
         }
       }
@@ -132,7 +136,11 @@ export default {
       singers,
       playSong,
       alterPlayTheWay,
-      ...toRefs(data)
+      ...toRefs(data),
+      newPlaySong,
+      songList,
+      playNumber,
+      playTheWayIndex
     }
   }
 }

@@ -1,6 +1,6 @@
 import axios from 'axios'
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://wangyiyun.vercel.app',
   timeout: 6000
 })
 // 添加请求拦截器

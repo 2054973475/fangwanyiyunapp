@@ -81,7 +81,6 @@
 </template>
 
 <script>
-import { reactive, toRefs } from '@vue/reactivity'
 import { useRouter } from 'vue-router'
 export default {
   props: {
@@ -91,9 +90,6 @@ export default {
   },
   setup (props) {
     const router = useRouter()
-    const data = reactive({
-      playlist: props.playlist
-    })
     const back = () => {
       router.go(-1)
     }
@@ -108,8 +104,7 @@ export default {
     }
     return {
       back,
-      playCount,
-      ...toRefs(data)
+      playCount
     }
   }
 }

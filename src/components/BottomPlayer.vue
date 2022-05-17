@@ -70,7 +70,7 @@
 import PlayList from '@/components/PlayList'
 import SongDetails from '@/components/SongDetails'
 import { useStore } from 'vuex'
-import { nextTick, reactive, toRefs, toRef, ref, watch } from 'vue'
+import { nextTick, reactive, toRefs, ref, watch, computed } from 'vue'
 
 export default {
   components: {
@@ -89,11 +89,12 @@ export default {
       show: ref(false),
       alterRate: null
     })
-    const songList = store.state.songList
-    const newSongList = store.state.newSongList
-    const playStatus = toRef(store.state, 'playStatus')
-    const playTheWayIndex = toRef(store.state, 'playTheWayIndex')
-    const song = newSongList[store.state.songIndex]
+    const songList = computed(() => store.state.songList)
+    const newSongList = computed(() => store.state.newSongList)
+    const playStatus = computed(() => store.state.playStatus)
+    const playTheWayIndex = computed(() => store.state.playTheWayIndex)
+    const songIndex = computed(() => store.state.songIndex)
+    const song = computed(() => newSongList.value[songIndex.value])
     // 轮播图变化触发的事件
     const onClick = () => {
       data.songShow = true
@@ -118,15 +119,11 @@ export default {
     }
     // 监听歌曲变化
     watch(
-      () => song,
+      () => song.value,
       (count, prevCount) => {
-        if (data.first !== 0) {
-          nextTick(() => {
-            playStart()
-          })
-        } else {
-          data.first = 1
-        }
+        nextTick(() => {
+          playStart()
+        })
       },
       {
         deep: true
@@ -147,10 +144,10 @@ export default {
           store.commit('ALTERPLAYSTATUS', 0)
           cancelAnimationFrame(data.alterRate)
           if (data.rate === '100') {
-            if (store.state.songIndex === store.state.songList.length - 1) {
+            if (songIndex.value === songList.value.length - 1) {
               store.commit('ALTERSONGINDEX', 0)
             } else {
-              store.commit('ALTERSONGINDEX', store.state.songIndex + 1)
+              store.commit('ALTERSONGINDEX', songIndex.value + 1)
             }
           }
         } else {
@@ -170,7 +167,6 @@ export default {
         playStart()
       }
     }
-    // console.log(data.song)
     const alterCurrentTime = (value) => {
       data.audio.currentTime = value
       data.currentTime = value

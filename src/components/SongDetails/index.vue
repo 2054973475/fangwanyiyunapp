@@ -98,11 +98,13 @@ export default {
     const store = useStore()
     const data = reactive({
       show: ref(false),
-      playStatus: store.state.playStatus,
-      playTheWayIndex: store.state.playTheWayIndex,
       playTheWayIcon: ['icon-liebiaoxunhuan1-copy', 'icon-gl-repeatOnce2-copy', 'icon-gl-shuffle-copy'],
       sliderButton: ref(null)
     })
+    const playStatus = computed(() => store.state.playStatus)
+    const playTheWayIndex = computed(() => store.state.playTheWayIndex)
+    const songIndex = computed(() => store.state.songIndex)
+    const newSongListLength = computed(() => store.state.newSongList.length)
     const currentTimeValue = computed({
       get () {
         return props.currentTime
@@ -137,17 +139,17 @@ export default {
       data.show = true
     }
     const nextMusic = () => {
-      if (store.state.songIndex === store.state.newSongList.length - 1) {
+      if (songIndex.value === newSongListLength.value - 1) {
         store.commit('ALTERSONGINDEX', 0)
       } else {
-        store.commit('ALTERSONGINDEX', store.state.songIndex + 1)
+        store.commit('ALTERSONGINDEX', songIndex.value + 1)
       }
     }
     const previousMusic = () => {
-      if (store.state.songIndex === 0) {
-        store.commit('ALTERSONGINDEX', store.state.newSongList.length - 1)
+      if (songIndex.value === 0) {
+        store.commit('ALTERSONGINDEX', newSongListLength.value - 1)
       } else {
-        store.commit('ALTERSONGINDEX', store.state.songIndex - 1)
+        store.commit('ALTERSONGINDEX', songIndex.value - 1)
       }
       // ALTERSONGINDEX
     }
@@ -161,7 +163,9 @@ export default {
       dragEnd,
       singerName,
       format,
-      ...toRefs(data)
+      ...toRefs(data),
+      playStatus,
+      playTheWayIndex
     }
   }
 }
@@ -189,7 +193,7 @@ export default {
     }
   }
   header {
-    padding-top: .4rem;
+    padding-top: 0.4rem;
     position: relative;
     .title {
       width: 4rem;
@@ -199,9 +203,9 @@ export default {
       align-items: center;
       .name {
         width: 100%;
-        font-size: .4rem;
+        font-size: 0.4rem;
         color: white;
-        margin-right: .4rem;
+        margin-right: 0.4rem;
       }
       .arName {
         width: 2.4rem;
@@ -214,13 +218,13 @@ export default {
     }
     .right {
       position: absolute;
-      top: .4rem;
-      right: .3rem;
+      top: 0.4rem;
+      right: 0.3rem;
     }
   }
   footer {
     position: absolute;
-    padding: 0 .4rem;
+    padding: 0 0.4rem;
     z-index: 120;
     height: 2rem;
     width: 100%;
@@ -229,8 +233,8 @@ export default {
       display: flex;
       justify-content: space-around;
       .slider-button {
-        width: .2rem;
-        height: .2rem;
+        width: 0.2rem;
+        height: 0.2rem;
         border-radius: 50%;
         background-color: white;
         transition: all 0.2s linear;
@@ -244,7 +248,7 @@ export default {
     }
     .buttons {
       display: flex;
-      margin-top: .3rem;
+      margin-top: 0.3rem;
       justify-content: space-around;
       align-items: center;
       .play-status {
