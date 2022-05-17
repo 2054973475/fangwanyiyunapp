@@ -63,7 +63,6 @@
 <script>
 import { reactive, toRefs } from '@vue/reactivity'
 import { useStore } from 'vuex'
-import { computed } from '@vue/runtime-core'
 export default {
   props: {
     musicList: {
@@ -73,8 +72,8 @@ export default {
   setup (props) {
     const store = useStore()
     const data = reactive({
-      songIndex: computed(() => store.state.songIndex),
-      newSongList: computed(() => store.state.newSongList)
+      songIndex: store.state.songIndex,
+      newSongList: store.state.newSongList
     })
     const author = (authors) => {
       let author = ''

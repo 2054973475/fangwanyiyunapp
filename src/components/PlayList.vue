@@ -59,7 +59,6 @@
 <script>
 import { reactive, toRefs } from '@vue/reactivity'
 import { useStore } from 'vuex'
-import { computed } from '@vue/runtime-core'
 export default {
   setup () {
     const store = useStore()
@@ -75,10 +74,10 @@ export default {
           icon: 'icon-gl-shuffle', name: '随机播放'
         }
       ],
-      newPlaySong: computed(() => store.state.newSongList[store.state.songIndex]),
-      playList: computed(() => store.state.songList),
-      playNumber: computed(() => store.state.songList.length),
-      playTheWayIndex: computed(() => store.state.playTheWayIndex)
+      newPlaySong: store.state.newSongList[store.state.songIndex],
+      playList: store.state.songList,
+      playNumber: store.state.songList.length,
+      playTheWayIndex: store.state.playTheWayIndex
     })
     const playSong = (song) => {
       const index = store.state.newSongList.findIndex((item) => {
@@ -141,17 +140,17 @@ export default {
 
 <style lang="less" scoped>
 .play-list {
-  padding: .4rem;
+  padding: 0.4rem;
   padding-top: 0;
   header {
     position: sticky;
     top: 0;
-    padding: .4rem 0;
+    padding: 0.4rem 0;
     background-color: white;
     h2 {
-      margin-bottom: .2rem;
+      margin-bottom: 0.2rem;
       span {
-        font-size: .32rem;
+        font-size: 0.32rem;
         color: rgba(0, 0, 0, 0.6);
       }
     }
@@ -161,18 +160,18 @@ export default {
       .left {
         display: flex;
         align-items: center;
-        font-size: .32rem;
+        font-size: 0.32rem;
         .icon {
-          width: .5rem;
-          height: .5rem;
-          margin-right: .12rem;
+          width: 0.5rem;
+          height: 0.5rem;
+          margin-right: 0.12rem;
         }
       }
       .right {
         .icon {
-          width: .5rem;
-          height: .5rem;
-          margin-left: .5rem;
+          width: 0.5rem;
+          height: 0.5rem;
+          margin-left: 0.5rem;
         }
       }
     }
@@ -180,7 +179,7 @@ export default {
   main {
     ul {
       li {
-        padding: .2rem 0;
+        padding: 0.2rem 0;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -191,18 +190,18 @@ export default {
           white-space: nowrap;
           text-overflow: ellipsis;
           .icon {
-            width: .4rem;
-            height: .4rem;
+            width: 0.4rem;
+            height: 0.4rem;
           }
         }
         .right {
           display: flex;
           align-items: center;
           .source {
-            border: .02rem solid rgba(0, 0, 0, 0.3);
-            padding: .04rem .2rem;
-            border-radius: .2rem;
-            margin-right: .3rem;
+            border: 0.02rem solid rgba(0, 0, 0, 0.3);
+            padding: 0.04rem 0.2rem;
+            border-radius: 0.2rem;
+            margin-right: 0.3rem;
           }
         }
       }

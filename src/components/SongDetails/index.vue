@@ -98,8 +98,8 @@ export default {
     const store = useStore()
     const data = reactive({
       show: ref(false),
-      playStatus: computed(() => store.state.playStatus),
-      playTheWayIndex: computed(() => store.state.playTheWayIndex),
+      playStatus: store.state.playStatus,
+      playTheWayIndex: store.state.playTheWayIndex,
       playTheWayIcon: ['icon-liebiaoxunhuan1-copy', 'icon-gl-repeatOnce2-copy', 'icon-gl-shuffle-copy'],
       sliderButton: ref(null)
     })
